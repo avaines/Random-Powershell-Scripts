@@ -6,5 +6,8 @@ Get-VMDetails:
 
 Invoke-FirewallConversionTools:
 	Tools for convting ASA and Juniper code to and from each other and CSV files
+	
+Start-MailTest
+	Tools for sending messages consitantly to multiple addresses when testing mail flow through Exchange servers with authentication
 
 	
