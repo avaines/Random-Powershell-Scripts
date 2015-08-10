@@ -1,4 +1,4 @@
-# Random-Powershell-Scripts
+# Random-VMware-Powershell-Scripts
 A Repository of random Powershell scripts
 
 Get-VMDetails => 
