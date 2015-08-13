@@ -57,56 +57,63 @@ ForEach ($object in $CSVData)  {
         }
         $PathNoUser = $PathNoUser.substring(1)
         
-
-
-        #Build the OU structure
-        #################################
-        #write-host "Check if $PathNoUser exists"
+        try {
+            #Build the OU structure
+            #################################
+            #write-host "Check if $PathNoUser exists"
                 
-        # The desired resulting OU DN  
-        # A regex to split the DN, taking escaped commas into account
-        $PathNoUserRegex = '(?<![\\]),'
+            # The desired resulting OU DN  
+            # A regex to split the DN, taking escaped commas into account
+            $PathNoUserRegex = '(?<![\\]),'
         
-        # We'll need to traverse the path, level by level, let's figure out the number of possible levels 
-        $Depth = ($PathNoUser -split $PathNoUserRegex).Count
-        # Step through each possible parent OU
-        for($i = 1;$i -le $Depth;$i++)
-        {
-            $NextOU = ($PathNoUser -split $PathNoUserRegex,$i)[-1]
-            if($NextOU.IndexOf("OU=") -ne 0 -or [ADSI]::Exists("LDAP://$NextOU"))
+            # We'll need to traverse the path, level by level, let's figure out the number of possible levels 
+            $Depth = ($PathNoUser -split $PathNoUserRegex).Count
+            # Step through each possible parent OU
+            for($i = 1;$i -le $Depth;$i++)
             {
-                break
+                $NextOU = ($PathNoUser -split $PathNoUserRegex,$i)[-1]
+                if($NextOU.IndexOf("OU=") -ne 0 -or [ADSI]::Exists("LDAP://$NextOU"))
+                {
+                    break
+                }
+                else
+                {
+                    # OU does not exist, remember this for later
+                    [String[]]$MissingOUs += $NextOU 
+                }
             }
-            else
+        
+            # Reverse the order of missing OUs, we want to create the top-most needed level first
+            [array]::Reverse($MissingOUs)
+        
+            # Now create the missing part of the tree, including the desired OU
+            foreach($OU in $MissingOUs)
             {
-                # OU does not exist, remember this for later
-                [String[]]$MissingOUs += $NextOU 
+                $newOUName = (($OU -split $PathNoUserRegex,2)[0] -split "=")[1]
+                $newOUPath = ($OU -split $PathNoUserRegex,2)[1]
+                New-ADOrganizationalUnit -Name $newOUName -Path $newOUPath
             }
+            
+        }catch{
+            Write-Host "[ERROR] Create OU failed => " $_.exception.message
         }
-        
-        # Reverse the order of missing OUs, we want to create the top-most needed level first
-        [array]::Reverse($MissingOUs)
-        
-        # Now create the missing part of the tree, including the desired OU
-        foreach($OU in $MissingOUs)
-        {
-            $newOUName = (($OU -split $PathNoUserRegex,2)[0] -split "=")[1]
-            $newOUPath = ($OU -split $PathNoUserRegex,2)[1]
-            New-ADOrganizationalUnit -Name $newOUName -Path $newOUPath
-        }
-        }
-        
+    }
         #################################
         
 
         #Create the user accounts
         #########################
-        $pathusername = $object.sAMAccountName
-        write-host ""
-        #new-AdUser -name $pathusername -SamAccountName $pathusername -path $Pathnouserpadded -enabled $true -PasswordNotRequired $true -passThru
+        
+        try {
+            $pathusername = $object.sAMAccountName
+            write-host ""
+            #new-AdUser -name $pathusername -SamAccountName $pathusername -path $Pathnouserpadded -enabled $true -PasswordNotRequired $true -passThru
 
-        New-ADUser -Name $PathUser -SamAccountName $pathusername -userprincipalname ($pathusername +'@' + $PathDomain) -Path $PathNoUser -Description "TEST" -Enabled $True -AccountPassword (ConvertTo-SecureString "Password1@"-AsPlainText -force) -PassThru
-
+            New-ADUser -Name $PathUser -SamAccountName $pathusername -userprincipalname ($pathusername +'@' + $PathDomain) -Path $PathNoUser -Description "TEST" -Enabled $True -AccountPassword (ConvertTo-SecureString "Password1@"-AsPlainText -force) -PassThru
+        
+        }catch{
+            Write-Host "[ERROR] Create user failed => " $_.exception.message
+        }
         #################################
 
 

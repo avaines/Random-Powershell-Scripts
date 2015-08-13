@@ -153,21 +153,24 @@ function Start-ReplaceUPNs{
         switch ($choice){
             Y{
                 foreach ($row in $Global:UPNArray){
-                    $DesiredUPNs += @($row.'New UPN'.split("@")[1])
+                    $DesiredUPNs += @($row.'New UPN'.tolower().split("@")[1])
                 }
-                 $DesiredUPNs = $DesiredUPNs | sort-object | get-unique   
+                 $DesiredUPNs = $DesiredUPNs.tolower() | sort-object | get-unique   
 
 
 
                 #Find out all UPNs listed in Domains and Trusts
-                write-host "Checking for UPN Suffix: " $DesiredUPNs -join(", ")
+                write-host "Checking for UPN Suffix: " $DesiredUPNs
                 $domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()            
                 $domaindn = ($domain.GetDirectoryEntry()).distinguishedName            
                 $upnDN = "cn=Partitions,cn=Configuration,$domaindn" 
                 $upnList = Get-ADObject -Identity $upnDN -Properties upnsuffixes | select -ExpandProperty upnsuffixes
                                
                 #Check the exsisting UPNs agains the new UPN we want to use   
-                if ($upnList -contains $DesiredUPNs){
+                [regex] $RF_regex = ‘(?i)^(‘ + (($DesiredUPNs |foreach {[regex]::escape($_)}) –join “|”) + ‘)$’  #regex from $DesiredUPNs. Matched against $UPNList, it will return true/false.
+
+                               
+                if (($UPNList -match $RF_regex).count -eq $DesiredUPNs.count){
                         write-host "Desired UPNs are found in the Domain's config"
 
 
@@ -198,6 +201,7 @@ function Start-ReplaceUPNs{
                         }
                     }else{
                         write-host "Desired UPNs were not found in the Domain's config!"
+                        compare-object $upnList $DesiredUPNs
                         write-host "Existing"
                         exit
                     }#End UPN suffix check block
