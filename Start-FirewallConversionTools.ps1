@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Tools for convting ASA and Juniper code to and from each other and CSV files
+    Tools for converting ASA and Juniper code to and from each other and CSV files
  
 .DESCRIPTION
-    Tools for convting ASA and Juniper code to and from each other and CSV files:
+    Tools for converting ASA and Juniper code to and from each other and CSV files:
     1) Convert ASA Service Objects
       (Supply ASA config service objects, outputs Juniper config)
 
@@ -17,10 +17,10 @@
       (Supply CSV formatted 'Server, Interface IP VLAN Description' outputs Juniper host objects)
 
     5) Convert ASA ASDM rule export into standardised firewall rule format
-      (Supply ASDM export, output is in starndard documentation format)
+      (Supply ASDM export, output is in standard documentation format)
 
     6) Convert Junos config into standardised firewall rule format
-      (Supply ASDM export, output is in starndard documentation format)
+      (Supply ASDM export, output is in standard documentation format)
 
 .PARAMETER  
     None
@@ -46,7 +46,7 @@ function Get-ServiceObjects{
         $ASAServiceObjects = get-content $asafile
     }
     Process {
-        $ASAServiceObjects -split “`r`n” | foreach { 
+        $ASAServiceObjects -split "`r`n"  | foreach { 
             #If its an object definition
             if ($_ -match "object service"){
                 #deals with service object definitions
@@ -98,7 +98,7 @@ function Get-HostObjects{
         $ASAHostObjects = get-content $asafile
     }
     Process {
-        $ASAHostObjects -split “`r`n” | foreach { 
+        $ASAHostObjects -split "`r`n"  | foreach { 
          #If its an object definition
             if ($_ -match "object network"){
                 #echo $_
@@ -223,7 +223,7 @@ function Get-JunosToCSV{
         #Stores the whole rules table as a jagged array in format:
         #(fromZone, toZone, Name, Source, Destination, Service, Action)
         $rulesarray = @() 
-        $SRXConfig -split “`r`n” | foreach { 
+        $SRXConfig -split "`r`n"  | foreach { 
              #If its an object definition
             if($_ -match "source-address"){
                 $rulesarray += ,@($_.split(" ")[4], $_.split(" ")[6], $_.split(" ")[8], $_.split(" ")[11], "", "", "")
@@ -292,6 +292,57 @@ function Get-JunosToCSV{
     }
 }
 
+function Get-ASANetworkObjects{
+    Begin
+    {
+        write-host "Converts ASA Network Objects to CSV format"
+        write-host ""
+        $asafile = read-host "Enter filename of ASA config"
+        $ASAServiceObjects = get-content $asafile
+    }
+    Process {
+        $Counter=0
+        $object = ""
+        $objectip = ""
+        write-host "Exporting to output.csv"
+        $ASAServiceObjects -split "`r`n" | foreach { 
+            
+            
+            #If its an object definition
+            if ($_ -match "object network"){
+                if ($Counter -eq 0) {
+                    $object = ""
+                    $object = $_.split(" ")[2]
+                    $outputtype=0
+                    $counter = 1
+                }
+
+            }elseif ($_ -match "host") {
+                if ($counter -eq 1) {
+                    $objectip = ""
+                    $objectip = $_.split(" ")[2]
+                    $outputtype = 0
+                    $counter = 0
+                }
+            }
+
+            #output
+
+            switch ($outputtype){
+                0 {
+                    if ($object -ne "" -AND $objectip -ne ""){
+                        $object + ', ' + $objectip | out-file .\output.csv -append
+                        $object = ""
+                        $objectip = ""
+                    }
+                }
+                
+               
+            }
+        }
+    }
+}
+
 
 
 
@@ -320,9 +371,12 @@ while ($x =! 0){
         write-host "6) Convert Junos config into standardised firewall rule format"
         write-host "  (Supply ASDM export, output is in starndard documentation format)"
         write-host ""
+        write-host "7) Convert ASA config into CSV of network objects and IPs"
+        write-host "  (Supply ASDM export, output is in CSV format)"
+        write-host ""
 
 
-    while ($choice -notmatch "[123]"){
+    while ($choice -notmatch "[1234567]"){
         $choice = read-host "Select Application"
     }
     switch ($choice){
@@ -332,6 +386,7 @@ while ($x =! 0){
             4{Get-CsvToJunosHosts}
             5{Get-AsaToCSV}
             6{Get-JunosToCSV}
+            7{Get-ASANetworkObjects}
 
             default{write-host "Invalid selection, exiting"}
     }
