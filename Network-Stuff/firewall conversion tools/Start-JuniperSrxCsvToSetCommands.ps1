@@ -1,5 +1,4 @@
-﻿#csv should have the columns 
-#Use Excel to comvert the output of "show security policies | display xml | no-more | save /var/tmp/myexport.xml" to a CSV
+﻿#Use Excel to comvert the output of "show security policies | display xml | no-more | save /var/tmp/myexport.xml" to the Juniper Set command format
 
 
 $csvData.Clear()
