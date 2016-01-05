@@ -97,7 +97,7 @@ function Get-VmPartitions {
            'Memory (MB)'= ($vm.MemoryGB * 1024);  
            'Disks (GB)' = Get-VmDisks -VMName $vm.Name
            'Partitions (GB)' = Get-VmPartitions  -VMName $vm.Name
-		       'HDDs(GB)'= ($vm | get-harddisk | select-object -ExpandProperty CapacityGB) -join " + "            
+		   'HDDs(GB)'= ($vm | get-harddisk | select-object -ExpandProperty CapacityGB) -join " + "            
            'Datastore'= (Get-Datastore -vm $vm) -split ", " -join ", ";  
            'Partition/Size' = Get-InternalHDD -VMName $vm.Name  
            'Real-OS'= $vm.guest.OSFullName;  
