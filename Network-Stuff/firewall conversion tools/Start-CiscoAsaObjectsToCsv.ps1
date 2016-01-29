@@ -37,7 +37,7 @@
             switch ($outputtype){
                 0 {
                     if ($object -ne "" -AND $objectip -ne ""){
-                        $object + ', ' + $objectip | out-file .\output.csv -append
+                        '"' + $object + '","' + $objectip + '"' | out-file .\output.csv -append
                         $object = ""
                         $objectip = ""
                     }

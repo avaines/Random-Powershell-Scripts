@@ -62,7 +62,7 @@ function load-xml {
 
 
     # $d=([xml](gc employees.xml)).COMAPNY.DEPTS | where-object { 
-    #   foreach ($i in $_.EMPLOYEES.NAME) {
+    #   foreach ($i in $_.EMPLOYEES.'policy-name') {
     #     $o = New-Object Object
     #     Add-Member -InputObject $o -MemberType NoteProperty -Name DEPT -Value $_.DEPT
     #     Add-Member -InputObject $o -MemberType NoteProperty -Name NAME -Value $i
@@ -76,25 +76,25 @@ function load-xml {
             $obj = new-object object
         
             #write-host "`n"      
-            #write-host "from-zone-name: `t`t" $_.'from-zone-name'
-            #write-host "to-zone-name: `t`t`t" $_.'to-zone-name'
-            #write-host "name: `t`t`t`t`t" $i.name
-            #write-host "source-address: `t`t" $i.match.'source-address'
-            #write-host "destination-address: `t" $i.match.'destination-address'
+            #write-host "from-zone-name: `t`t" $_.'source-zone-name'
+            #write-host "to-zone-name: `t`t`t" $_.'destination-zone-name'
+            #write-host "name: `t`t`t`t`t" $i.'policy-name'
+            #write-host "source-address: `t`t" $i.match.'address-name'
+            #write-host "destination-address: `t" $i.match.'address-name6'
             #write-host "application: `t`t`t" $i.match.'application'
             #write-host "description: `t`t" $i.description
             #write-host "`n"
             #write-host $i
 
-            add-member -inputobject $obj -MemberType NoteProperty -name from-zone-name -value $_.'from-zone-name'
-            add-member -inputobject $obj -MemberType NoteProperty -name to-zone-name -value $_.'to-zone-name'
-            add-member -inputobject $obj -MemberType NoteProperty -name name -value $i.name
-            add-member -inputobject $obj -MemberType NoteProperty -name source-address -value $i.match.'source-address'
-            $obj.'source-address' = $obj.'source-address' -join ", "
-            add-member -inputobject $obj -MemberType NoteProperty -name destination-address -value $i.match.'destination-address'
-            $obj.'destination-address' = $obj.'destination-address' -join ", "
-            add-member -inputobject $obj -MemberType NoteProperty -name application -value $i.match.'application'
-            $obj.application = $obj.application -join ", "
+            add-member -inputobject $obj -MemberType NoteProperty -name from-zone-name -value $_.'source-zone-name'
+            add-member -inputobject $obj -MemberType NoteProperty -name to-zone-name -value $_.'destination-zone-name'
+            add-member -inputobject $obj -MemberType NoteProperty -name name -value $i.'policy-name'
+            add-member -inputobject $obj -MemberType NoteProperty -name source-address -value $i.match.'address-name'
+            $obj.'address-name' = $obj.'address-name' -join ", "
+            add-member -inputobject $obj -MemberType NoteProperty -name destination-address -value $i.match.'address-name6'
+            $obj.'address-name6' = $obj.'address-name6' -join ", "
+            add-member -inputobject $obj -MemberType NoteProperty -name application -value $i.match.'application-name'
+            $obj.'application-name' = $obj.'application-name' -join ", "
             add-member -inputobject $obj -MemberType NoteProperty -name description -value $i.description
 
             $obj | export-csv "rules.csv" -NoTypeInformation -Append -Encoding:UTF8
@@ -137,24 +137,24 @@ function Start-Conversion{
     ForEach ($object in $global:CSVData) {
     # Debug   
     # "`n#####################################"
-    # $object.name + "`t ==> `t" + $currentrule
-    # $object.'from-zone-name' + "`t`t`t`t`t ==> `t" + $currentsource
-    # $object.'to-zone-name' + "`t`t`t`t`t`t ==> `t" + $currentdestination
-    # "All 3 checks: " + (($object.name -ne $currentrule) -and (($object.'from-zone-name' -ne $currentsource) -or ($object.'to-zone-name' -ne $currentdestination)))
-    # "Check To: " + ($object.'from-zone-name' -ne $currentsource)
-    # "Check From: " + ($object.'to-zone-name' -ne $currentdestination)
+    # $object.'policy-name' + "`t ==> `t" + $currentrule
+    # $object.'source-zone-name' + "`t`t`t`t`t ==> `t" + $currentsource
+    # $object.'destination-zone-name' + "`t`t`t`t`t`t ==> `t" + $currentdestination
+    # "All 3 checks: " + (($object.'policy-name' -ne $currentrule) -and (($object.'source-zone-name' -ne $currentsource) -or ($object.'destination-zone-name' -ne $currentdestination)))
+    # "Check To: " + ($object.'source-zone-name' -ne $currentsource)
+    # "Check From: " + ($object.'destination-zone-name' -ne $currentdestination)
     # "`n#####################################"
 
 
 
     #Does the current rule match the last one processed?
-    if (($object.name -ne $currentrule) -or (($object.'from-zone-name' -ne $currentsource) -or ($object.'to-zone-name' -ne $currentdestination))){
+    if (($object.'policy-name' -ne $currentrule) -or (($object.'source-zone-name' -ne $currentsource) -or ($object.'destination-zone-name' -ne $currentdestination))){
         
         #No
         #Dump the last object to file
-        $Result = @{'Source IF' = $object.'from-zone-name';
-                    'Dest IF' = $object.'to-zone-name';
-                    'Name' = $object.name;
+        $Result = @{'Source IF' = $object.'source-zone-name';
+                    'Dest IF' = $object.'destination-zone-name';
+                    'Name' = $object.'policy-name';
                     'Src IP/Group/Any' = $sources -join ', ';
                     'Dest  IP/Group/Any'= $destinations -join ', ';
                     'Application' = $services -join ', ';
@@ -170,33 +170,33 @@ function Start-Conversion{
         $destinations = @() 
         $services = @() 
         
-        $currentrule = $object.name
-        $currentsource = $object.'from-zone-name'
-        $currentdestination = $object.'to-zone-name'
+        $currentrule = $object.'policy-name'
+        $currentsource = $object.'source-zone-name'
+        $currentdestination = $object.'destination-zone-name'
 
     }
       
     
-    if (!$object.'destination-address'-and !$object.application){
+    if (!$object.'address-name6'-and !$object.'application-name'){
         #Destination and Application are empty, implying this is a "Source Address"
         #Store the source
-        $sources += $object.'source-address' 
+        $sources += $object.'address-name' 
 
-    }elseif (!$object.'source-address'-and !$object.application){
+    }elseif (!$object.'address-name'-and !$object.'application-name'){
         #Source and Application are empty, implying this is a "Destination Address"
         #store the destinations
-        $destinations += $object.'destination-address'
+        $destinations += $object.'address-name6'
 
-    }elseif (!$object.'source-address'-and !$object.'destination-address'){
+    }elseif (!$object.'address-name'-and !$object.'address-name6'){
         #Source and destination are empty, implying this is a "Application"
         #store the services
-        $services += $object.application
+        $services += $object.'application-name'
 
     } 
 
-    $currentrule = $object.name
-    $currentsource = $object.'from-zone-name'
-    $currentdestination = $object.'to-zone-name'
+    $currentrule = $object.'policy-name'
+    $currentsource = $object.'source-zone-name'
+    $currentdestination = $object.'destination-zone-name'
 
 
 } 
@@ -210,8 +210,7 @@ try {
        load-csv
        Start-Conversion
     }elseif ($xml -and !$csv){
-        load-xml
-        Start-Conversion
+       write-host "Old format XML is crap, use CSV method"
     }elseif ($xml -and $csv){}
 
 }catch{
