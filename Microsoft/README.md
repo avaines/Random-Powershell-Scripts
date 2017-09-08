@@ -7,3 +7,6 @@ Start-RecursiveOUCreation.ps1 =>
 
 Start-UPNRemediation =>
 	Compares a CSV with a given active directory OU, checks the UPN against a list and replaces with the desired UPN with a lot of checking
+
+Start-LabADPopulate =>
+	A script to populate a lab environment with pretend users

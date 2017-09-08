@@ -1,6 +1,6 @@
 Start-LabADPopulate
 ===================
-A script to populate a lab environment with pretend users, 
+A script to populate a lab environment with pretend users
 
 ----------
 
