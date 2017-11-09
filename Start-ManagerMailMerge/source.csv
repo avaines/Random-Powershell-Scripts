@@ -1,0 +1,8 @@
+ID,Name,Device,ManagerID,ManagerName,ManagerEmail
+1001,Joe Bloggs,iPhone 6,2001,A,A@domain.com
+1002,Steve Jones,iPhone 5,2001,a,A@domain.com
+1003,Dan Joel,iPhone 6,2002,B,b@domain.com
+1004,Sue Mills,iPhone 7,2003,C,c@domain.com
+1005,Jane Stewart,iPhone 6,2002,B,b@domain.com
+1006,Glen Beck,iPhone 5,2003,c,c@domain.com
+1007,Jon Jones,iPhone 6,2001,A,a@domain.com
