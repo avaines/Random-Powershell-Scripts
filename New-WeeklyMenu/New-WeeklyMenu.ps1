@@ -21,8 +21,48 @@
  [CmdletBinding()]
     Param (
         [Parameter(ValueFromPipeline=$true)][string]$RecipeListPath = "RecipeList.xlsx" #{throw "No RecipeList provided as argument"}
- 
     )
+
+function GetRecipeList {
+    [CmdletBinding()]
+    Param(
+        [parameter(Mandatory=$true)]
+        [string]$recipeListPath
+    )
+
+    if(-Not(Test-Path $recipeListPath)) {
+        Write-Error -ErrorDesc "Could not find file '$recipeListPath'" -ExitGracefully $true
+    }
+
+    $fileType = [IO.Path]::GetExtension($recipeListPath)
+
+    Write-Log -linevalue "Importing $recipeListPath"
+    switch ($fileType) {
+        ".xlsx" {
+            try{
+                Write-Log -linevalue "Excel file detected. Importing required modules"
+                Import-Module ImportExcel
+
+                $recipeList = Import-Excel -Path $recipeListPath -StartColumn 1 -EndColumn 4
+                
+            } catch {
+                Write-Error -ErrorDesc "$_.Exception" -ExitGracefully $true
+            }
+        }
+        ".csv" {
+            try{
+                $recipeList = Import-Csv $recipeListPath
+            } catch {
+                Write-Error -ErrorDesc "$_.Exception" -ExitGracefully $true
+            }
+        }
+        Default {
+            Write-Error -ErrorDesc "Unable to read file type: $fileType"  -ExitGracefully $true
+        }
+    }
+
+    return $recipeList
+}
 
 # Load modules and related files
 try{ 
@@ -68,18 +108,7 @@ try{
     # MAIN SCRIPT BLOCK BEGINS HERE.....#
     #####################################
 
-    try{
-        Write-Log -linevalue "Importing required modules"
-        import-module ImportExcel
-
-        Write-Log -linevalue "Importing $RecipeListPath"
-
-        $RecipeList = Import-Excel -Path $RecipeListPath -StartColumn 1 -EndColumn 4
-        
-    } catch {
-        Write-Error -ErrorDesc "$_.Exception" -ExitGracefully $True
-    }
-
+    $RecipeList = GetRecipeList $RecipeListPath
 
     try{
         #Checking for outputs folder and creating if unavailable
