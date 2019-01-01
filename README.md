@@ -12,6 +12,8 @@ I needed a way to email managers about staff in their team who were recieving ne
 # New-WeeklyMenu
 We got sick than eating the same set of meals week in week out, so we put together a spreadsheet of the recipes we use on a regular basis and built a little set of Excel functions to automatically generate a menu for 4 weeks.
 
+After a month or so we found our shopping bills had cut down by 40-50% as there was little to no waste due to things that seemed like a good idea when shopping or we just didnt have time to make.
+
 This had some issues; we would get duplicates, we couldn't tell which would make enough for leftovers for lunch the day after and most importantly we had to check the recipes for that week and work out a shopping list.
 
 This script addresses those issues and generates a HTML page for the menu and one for the shopping list which can then be printed or whatever you need to do with it.
