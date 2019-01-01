@@ -205,10 +205,10 @@ try{
 	  <th>Week 4</th>
     </tr>
     <tr>
-    <td valign='top'> <p><ul><li>" + (($shoppinglist.0 -split "`n" | select -Unique) -join "</li><li>") + "</li></ul></p></td>
-	<td valign='top'> <p><ul><li>" + (($shoppinglist.1 -split "`n" | select -Unique) -join "</li><li>") + "</li></ul></p></td>
-	<td valign='top'> <p><ul><li>" + (($shoppinglist.2 -split "`n" | select -Unique) -join "</li><li>") + "</li></ul></p></td>
-	<td valign='top'> <p><ul><li>" + (($shoppinglist.3 -split "`n" | select -Unique) -join "</li><li>") + "</li></ul></p></td>
+    <td valign='top'> <p><ul><li>" + (($shoppinglist.0 -split "`n" | select -Unique | sort) -join "</li><li>") + "</li></ul></p></td>
+	<td valign='top'> <p><ul><li>" + (($shoppinglist.1 -split "`n" | select -Unique | sort) -join "</li><li>") + "</li></ul></p></td>
+	<td valign='top'> <p><ul><li>" + (($shoppinglist.2 -split "`n" | select -Unique | sort) -join "</li><li>") + "</li></ul></p></td>
+	<td valign='top'> <p><ul><li>" + (($shoppinglist.3 -split "`n" | select -Unique | sort) -join "</li><li>") + "</li></ul></p></td>
    </tr>
    </table>"
 

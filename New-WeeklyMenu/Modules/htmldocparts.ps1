@@ -9,7 +9,7 @@ div {font-family:Tahoma; font-size:10pt; color: #0C0B07;}
 #menu-table {display: table-cell;text-align: center; vertical-align: middle;} 
 #menu-table table {width: 100%; table-layout: fixed;  border-collapse: collapse; padding-left: 2}
 #menu-table table tr:not(:first-child) th {display: inline-block;  -webkit-writing-mode: vertical-rl;  -ms-writing-mode: tb-rl;  writing-mode: vertical-rl;}
-#menu-table th {padding: 4px; font-size: 12px}
+#menu-table th {padding: 4px; font-size: 16px}
 #menu-table img {width: 20px;}
 #menu-table td {width: auto; border: 1px dotted black; padding: 5px;}
 #menu-table .rotate {white-space:nowrap; -webkit-transform: rotate(-80deg); -moz-transform: rotate(-80deg); -o-transform: rotate(-80deg);}
