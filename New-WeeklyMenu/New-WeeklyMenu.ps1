@@ -41,7 +41,7 @@ function GetRecipeList {
         ".xlsx" {
             try{
                 Write-Log -linevalue "Excel file detected. Importing required modules"
-                Import-Module ImportExcel
+                Import-Module importExcel -MinimumVersion 5.0
 
                 $recipeList = Import-Excel -Path $recipeListPath -StartColumn 1 -EndColumn 4
                 
