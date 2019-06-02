@@ -234,10 +234,40 @@ try{
 	  <th>Week 4</th>
     </tr>
     <tr>
-    <td valign='top'> <p><ul><li>" + (($shoppinglist.0 -split "`n" | select -Unique | sort) -join "</li><li>") + "</li></ul></p></td>
-	<td valign='top'> <p><ul><li>" + (($shoppinglist.1 -split "`n" | select -Unique | sort) -join "</li><li>") + "</li></ul></p></td>
-	<td valign='top'> <p><ul><li>" + (($shoppinglist.2 -split "`n" | select -Unique | sort) -join "</li><li>") + "</li></ul></p></td>
-	<td valign='top'> <p><ul><li>" + (($shoppinglist.3 -split "`n" | select -Unique | sort) -join "</li><li>") + "</li></ul></p></td>
+    <td valign='top'> <p><ul><li>" + ( (($shoppinglist.0 -split "`n" | group-object | sort-object name) | Select @{N="name"; E={     
+        if($_.count -gt 1){
+            $_.name + " <i>(" + $_.count + " recipies)</i>"
+        }
+        else {
+            $_.name 
+        }}} ).name -join "</li><li>" ) + "</li></ul></p></td>
+
+	<td valign='top'> <p><ul><li>" + ( (($shoppinglist.1 -split "`n" | group-object | sort-object name) | Select @{N="name"; E={        
+        if($_.count -gt 1){
+            $_.name + " <i>(" + $_.count + " recipies)</i>"
+        }
+        else {
+            $_.name 
+        }}}).name -join "</li><li>") + "</li></ul></p></td>
+
+    
+
+	<td valign='top'> <p><ul><li>" + ( (($shoppinglist.0 -split "`n" | group-object | sort-object name) | Select @{N="name"; E={
+        if($_.count -gt 1){
+            $_.name + " <i>(" + $_.count + " recipies)</i>"
+        }
+        else {
+            $_.name 
+        }}}).name -join "</li><li>") + "</li></ul></p></td>
+
+
+	<td valign='top'> <p><ul><li>" + ( (($shoppinglist.0 -split "`n" | group-object | sort-object name) | Select @{N="name"; E={
+        if($_.count -gt 1){
+            $_.name + " <i>(" + $_.count + " recipies)</i>"
+        }
+        else {
+            $_.name 
+        }}}).name -join "</li><li>") + "</li></ul></p></td>
    </tr>
    </table>"
 
