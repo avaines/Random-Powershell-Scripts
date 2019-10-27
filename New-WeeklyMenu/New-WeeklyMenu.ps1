@@ -252,7 +252,7 @@ try{
 
     
 
-	<td valign='top'> <p><ul><li>" + ( (($shoppinglist.0 -split "`n" | group-object | sort-object name) | Select @{N="name"; E={
+	<td valign='top'> <p><ul><li>" + ( (($shoppinglist.2 -split "`n" | group-object | sort-object name) | Select @{N="name"; E={
         if($_.count -gt 1){
             $_.name + " <i>(" + $_.count + " recipies)</i>"
         }
@@ -261,7 +261,7 @@ try{
         }}}).name -join "</li><li>") + "</li></ul></p></td>
 
 
-	<td valign='top'> <p><ul><li>" + ( (($shoppinglist.0 -split "`n" | group-object | sort-object name) | Select @{N="name"; E={
+	<td valign='top'> <p><ul><li>" + ( (($shoppinglist.3 -split "`n" | group-object | sort-object name) | Select @{N="name"; E={
         if($_.count -gt 1){
             $_.name + " <i>(" + $_.count + " recipies)</i>"
         }
